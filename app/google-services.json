@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "954960590291",
+    "project_id": "ncode-d1d61",
+    "storage_bucket": "ncode-d1d61.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954960590291:android:74aa158d2339f61bebab26",
+        "android_client_info": {
+          "package_name": "com.dtl.ncode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "954960590291-vcdvmlc6djn251lpnrhkdnnhd57jarv5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJIzptvFfA0z6BNvcZ6vXvP-0IeQKNmyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "954960590291-vcdvmlc6djn251lpnrhkdnnhd57jarv5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
