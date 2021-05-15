@@ -1,5 +1,7 @@
 package com.dtl.ncode;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -99,19 +101,30 @@ public class fragCodes extends Fragment{
 
                     @Override
                     public void onDelete(String codeNumber) {
-                        sharedViewModel.getDb().collection("nCODES").document(codeNumber).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(getActivity(), "deleted", Toast.LENGTH_SHORT).show();
+                        new AlertDialog.Builder(getActivity()).setTitle("Delete?")
+                                .setPositiveButton("confirm", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        sharedViewModel.getDb().collection("nCODES").document(codeNumber).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getActivity(), "deleted", Toast.LENGTH_SHORT).show();
 
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getActivity(), "failed to delete", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getActivity(), "failed to delete", Toast.LENGTH_SHORT).show();
 
+                                            }
+                                        });
+                                    }
+                                }).setNeutralButton("cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
                             }
-                        });
+                        }).create().show();
                     }
 
                 },getContext()));

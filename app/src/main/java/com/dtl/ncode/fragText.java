@@ -1,8 +1,10 @@
 package com.dtl.ncode;
 
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -70,8 +72,22 @@ public class fragText extends Fragment {
                 recyclerAdapter = new textRecyclerAdapter(texts, new textRecyclerAdapter.TextClickerHelper() {
                     @Override
                     public void delteText(String title_forQuery) {
-                        DAO.deleteText(title_forQuery);
-                        Toast.makeText(getActivity(), "Deleted "+title_forQuery, Toast.LENGTH_SHORT).show();
+                        new AlertDialog.Builder(getActivity()).setTitle("Delete?")
+                                .setNeutralButton("cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+
+                                    }
+                                }).setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DAO.deleteText(title_forQuery);
+                                Toast.makeText(getActivity(), "Deleted "+title_forQuery, Toast.LENGTH_SHORT).show();
+
+                            }
+                        }).create().show();
+
                     }
 
                     @Override

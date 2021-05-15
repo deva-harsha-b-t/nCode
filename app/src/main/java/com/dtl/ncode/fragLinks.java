@@ -1,8 +1,10 @@
 package com.dtl.ncode;
 
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -76,8 +78,20 @@ public class fragLinks extends Fragment {
 
                    @Override
                    public void deleteLink(String link_titleQuery) {
-                       dao.deleteLink(link_titleQuery);
-                       Toast.makeText(getActivity(), "Deleted "+link_titleQuery, Toast.LENGTH_SHORT).show();
+                       new AlertDialog.Builder(getActivity())
+                   .setTitle("Delete?").setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+                               dao.deleteLink(link_titleQuery);
+
+                           }
+                       }).setNeutralButton("cancel", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+                               dialog.dismiss();
+
+                           }
+                       }).create().show();
                    }
 
                    @Override

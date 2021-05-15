@@ -1,5 +1,8 @@
 package com.dtl.ncode;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -65,7 +69,7 @@ public class fragImages extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_frag_images, container, false);
         recyclerView = view.findViewById(R.id.imageRecyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
         recyclerView.setHasFixedSize(true);
         collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -80,32 +84,48 @@ public class fragImages extends Fragment {
                 adapter = new imageRVadapter(getContext() ,images, new imageRVadapter.imageClickerHelper() {
                     @Override
                     public void deleteImage(image img) {
-                        StorageReference imageref = ref.getReferenceFromUrl(img.getImageUrl());
-                        imageref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                collectionReference.document(img.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        AlertDialog.Builder builder  = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Delete?")
+                                .setPositiveButton("confirm", new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getActivity(), "deleted", Toast.LENGTH_SHORT).show();
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        StorageReference imageref = ref.getReferenceFromUrl(img.getImageUrl());
+                                        imageref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                collectionReference.document(img.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Toast.makeText(getActivity(), "deleted", Toast.LENGTH_SHORT).show();
+
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_SHORT).show();
+
+                                                    }
+                                                });
+
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                            }
+                                        });
 
                                     }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_SHORT).show();
-
-                                    }
-                                });
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
+                                }).setNeutralButton("cancel", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
 
                             }
                         });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
                     }
 
                     @Override
