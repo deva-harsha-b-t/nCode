@@ -1,6 +1,7 @@
 package com.dtl.ncode;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -10,6 +11,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -18,12 +21,19 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.request.target.CustomViewTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
 public class showImages extends AppCompatActivity {
-    private ImageView imageView;
+    private SubsamplingScaleImageView imageView;
     private Button button;
     private String url;
 
@@ -34,7 +44,9 @@ public class showImages extends AppCompatActivity {
         imageView = findViewById(R.id.imageViewSingle);
         button = findViewById(R.id.saveToGallery);
         url  = getIntent().getExtras().getString("url");
-        Glide.with(this).load(url).placeholder(R.drawable.ic_baseline_keyboard_arrow_down_24).into(imageView);
+
+        Glide.with(this).download(new GlideUrl(url)).into(new SSIV(imageView));
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +67,7 @@ public class showImages extends AppCompatActivity {
         if(!dir.exists()){
             dir.mkdir();
         }
-        BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getForeground();
         Bitmap bitmap = bitmapDrawable.getBitmap();
         String imageName = String.format("%d.png",System.currentTimeMillis());
         File outFile = new File(dir,imageName);
@@ -102,3 +114,28 @@ public class showImages extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
+    class SSIV extends CustomViewTarget<SubsamplingScaleImageView , File>{
+        SubsamplingScaleImageView view;
+
+        public SSIV(@NonNull @NotNull SubsamplingScaleImageView view) {
+            super(view);
+            this.view = view;
+        }
+
+        @Override
+        protected void onResourceCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+
+
+        }
+
+        @Override
+        public void onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onResourceReady(@NonNull @NotNull File resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super File> transition) {
+            view.setImage(ImageSource.uri(Uri.fromFile(resource)));
+
+        }
+    }
